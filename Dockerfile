@@ -46,13 +46,20 @@ RUN set -ex; \
 RUN rm -rf /var/lib/apt/lists/* && apt-get clean
 
 # install maven
+ENV MAVEN_HOME /opt/maven
 ENV MAVEN_VERSION 3.6.0
 ENV maven_archive apache-maven-${MAVEN_VERSION}-bin.tar.gz
 RUN wget -O /tmp/$maven_archive https://www-eu.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/$maven_archive
 RUN tar xzf /tmp/$maven_archive -C /opt/ && rm -f /tmp/$maven_archive
-RUN ln -s /opt/apache-maven-${MAVEN_VERSION} /opt/maven
-RUN ln -s /opt/maven/bin/mvn /usr/local/bin
-ENV MAVEN_HOME /opt/maven
+RUN ln -s /opt/apache-maven-${MAVEN_VERSION} $MAVEN_HOME
+RUN ln -s $MAVEN_HOME/bin/mvn /usr/local/bin
 
-COPY include/build-tagged-features.sh /bin/
-RUN chmod +x /bin/*.sh
+# install gradle
+ENV GRADLE_HOME /opt/gradle
+ENV GRADLE_VERSION 5.3.1
+ENV gradle_archive gradle-${GRADLE_VERSION}-bin.zip
+RUN wget -O /tmp/$gradle_archive https://services.gradle.org/distributions/$gradle_archive
+RUN unzip /tmp/$gradle_archive && rm -f /tmp/$gradle_archive
+RUN mv gradle-${GRADLE_VERSION} ${GRADLE_HOME}/
+RUN ln --symbolic ${GRADLE_HOME}/bin/gradle /usr/bin/gradle
+RUN gradle -v
