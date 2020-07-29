@@ -3,6 +3,9 @@ FROM ubuntu:18.04
 # this is a non-interactive automated build - avoid some warning messages
 ENV DEBIAN_FRONTEND noninteractive
 
+ENV TZ=Asia/Kolkata
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 RUN apt-get update 
 RUN apt-get install -y --no-install-recommends \
         bzip2 \
